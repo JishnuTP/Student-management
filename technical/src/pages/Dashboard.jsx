@@ -21,21 +21,41 @@ const Dashboard = () => {
   const handleOpenModal = () => setIsModalOpen(true);
   const handleCloseModal = () => setIsModalOpen(false);
 
-  const handleAddStudent = () => {
-    dispatch(
-      addStudent({
-        name: newStudent.name,
-        cohort: newStudent.cohort,
-        courses: newStudent.courses.split(", "), // Convert courses to an array
-        status: newStudent.status,
-      })
-    );
-    dispatch(fetchStudents());
-
-    // Reset form state
-    setNewStudent({ name: "", cohort: "", courses: "", status: true });
-    handleCloseModal();
+  const handleAddStudent = async () => {
+    // Check if any required field is missing
+    if (!newStudent.name || !newStudent.cohort || !newStudent.courses) {
+      // Show an alert if required fields are missing
+      alert("Please fill in all required fields (Name, Cohort, and Courses).");
+      return; // Exit the function early if validation fails
+    }
+  
+    try {
+      // Dispatch addStudent action and wait for the promise to resolve
+      await dispatch(
+        addStudent({
+          name: newStudent.name,
+          cohort: newStudent.cohort,
+          courses: newStudent.courses.split(", "), // Convert courses to an array
+          status: newStudent.status,
+        })
+      );
+      
+      // Fetch students again after adding the student
+      dispatch(fetchStudents());
+  
+      // Reset form state
+      setNewStudent({ name: "", cohort: "", courses: "", status: true });
+  
+      // Close the modal
+      handleCloseModal();
+    } catch (error) {
+      // Handle error if something goes wrong
+      console.error("Error adding student:", error);
+      alert("Failed to add student.");
+    }
   };
+  
+  
 
   return (
     <div className="flex h-screen bg-gray-100">

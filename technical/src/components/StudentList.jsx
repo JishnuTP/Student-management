@@ -45,11 +45,15 @@ const StudentList = ({ onGetDetails }) => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        dispatch(deleteStudent(id));
+        dispatch(deleteStudent(id)).then(() => {
+          // Fetch students again after deletion
+          dispatch(fetchStudents());
+        });
         Swal.fire("Deleted!", "The student has been deleted.", "success");
       }
     });
   };
+  
 
   const handleEditClick = (student) => {
     setSelectedStudent(student);
@@ -58,10 +62,13 @@ const StudentList = ({ onGetDetails }) => {
   };
 
   const handleUpdate = () => {
-    dispatch(updateStudent(selectedStudent));
-    dispatch(fetchStudents())
+    dispatch(updateStudent(selectedStudent)).then(() => {
+      // Fetch students again after update
+      dispatch(fetchStudents());
+    });
     setIsModalOpen(false);
   };
+  
 
   const filteredStudents = students.filter((student) => {
     const matchesCohort =
